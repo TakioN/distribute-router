@@ -5,13 +5,14 @@ const { sendMessage } = require("./sendMessage");
 const { insertToDb } = require("./insertToDb");
 const { getLeastMasterId } = require("./getLeastMasterId");
 
-// 정적 파일 제공 (임시 파일 접근)
+// 구글 드라이브 auth
 const auth = new google.auth.GoogleAuth({
   keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
   scopes: ["https://www.googleapis.com/auth/drive"],
 });
 const drive = google.drive({ version: "v3", auth });
 
+// 구글 드라이브 업로드
 async function uploadToDrive(filePath, fileName) {
   const fileMetadata = { name: fileName };
   const media = {
@@ -42,9 +43,10 @@ async function uploadToDrive(filePath, fileName) {
   };
 }
 
+// code for dev
 async function deleteDrive() {
   await drive.files.delete({
-    fileId: "11qnkDXkGkIK-aLvJjo4SPdzfS_pFYpNI",
+    fileId: "1EKyr9iqgm8YK-Mywrsgf4zkbo4x5ioF7",
   });
   const res = await drive.files.list({
     pageSize: 10,
@@ -68,7 +70,7 @@ async function uploadFile(req, res) {
     if (masterId === null) {
       throw new Error("No available master found");
     }
-    const data = { size: fileSize, type: "save", file_url: fileUrl };
+    const data = { size: Number(fileSize), type: "save", file_url: fileUrl };
     const jobId = await insertToDb(masterId, data);
     await sendMessage(jobId, masterId, "s");
 

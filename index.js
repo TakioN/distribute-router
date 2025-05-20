@@ -1,11 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
 const cors = require("cors");
-const { google } = require("googleapis");
 const { uploadFile } = require("./uploadFile");
 const { computeFile } = require("./computeFile");
+const { checkStatus } = require("./checkStatus");
 
 const app = express();
 const PORT = 4000;
@@ -26,6 +25,9 @@ app.post("/upload", upload.single("file"), uploadFile);
 
 // compute
 app.post("/compute", computeFile);
+
+// check status
+app.post("/check", checkStatus);
 
 // 서버 시작
 app.listen(PORT, () => {

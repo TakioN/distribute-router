@@ -14,14 +14,14 @@ async function computeFile(req, res) {
     if (masterId === null) {
       throw new Error("No available master found");
     }
-    const data = { tpye: "compute", input: input_data, model_id: file_id };
+    const data = { type: "compute", input: input_data, model_id: file_id };
     const jobId = await insertToDb(masterId, data);
     await sendMessage(jobId, masterId, "c");
 
     res.json({ success: true, jobId });
   } catch (err) {
     console.error("연산 요청 실패:", err);
-    res.status(500).json({ error: "연산 요청 실패" });
+    res.status(500).json({ success: false, error: "연산 요청 실패" });
   }
 }
 

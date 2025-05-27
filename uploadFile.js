@@ -38,6 +38,7 @@ async function uploadToDrive(filePath, fileName) {
   }
   const downloadUrl = `https://drive.google.com/uc?id=${file.data.id}`;
   return {
+    fileId: file.data.id,
     fileUrl: downloadUrl,
     fileSize: file.data.size,
   };
@@ -46,7 +47,7 @@ async function uploadToDrive(filePath, fileName) {
 // code for dev
 async function deleteDrive() {
   await drive.files.delete({
-    fileId: "1EKyr9iqgm8YK-Mywrsgf4zkbo4x5ioF7",
+    fileId: "1dywX8RQ6fVknFhyVkrjh66iylFajpQE5",
   });
   const res = await drive.files.list({
     pageSize: 10,
@@ -60,7 +61,10 @@ async function uploadFile(req, res) {
     const localPath = req.file.path;
     const originalName = req.file.originalname;
 
-    const { fileUrl, fileSize } = await uploadToDrive(localPath, originalName);
+    const { fileId, fileUrl, fileSize } = await uploadToDrive(
+      localPath,
+      originalName
+    );
     // await deleteDrive();
 
     // 로컬 파일 삭제
@@ -71,13 +75,14 @@ async function uploadFile(req, res) {
       throw new Error("No available master found");
     }
     const data = { size: Number(fileSize), type: "save", file_url: fileUrl };
+    // const data = { type: "save" };
     const jobId = await insertToDb(masterId, data);
     await sendMessage(jobId, masterId, "s");
 
-    res.json({ success: true, jobId });
+    res.json({ success: true, jobId, fileId });
   } catch (err) {
     console.error("Upload failed:", err);
-    res.status(500).json({ success: false, error: "Upload failed" });
+    res.status(500).json({ success: false, error: "파일 업로드 실패" });
   }
 }
 

@@ -5,6 +5,7 @@ const cors = require("cors");
 const { uploadFile } = require("./uploadFile");
 const { computeFile } = require("./computeFile");
 const { checkStatus } = require("./checkStatus");
+const { checkResult } = require("./checkResult");
 
 const app = express();
 const PORT = 4000;
@@ -26,8 +27,11 @@ app.post("/upload", upload.single("file"), uploadFile);
 // compute
 app.post("/compute", computeFile);
 
-// check status
-app.post("/check", checkStatus);
+// check status(save)
+app.post("/check/upload", checkStatus);
+
+// check status(compute)
+app.post("/check/compute", checkResult);
 
 // 서버 시작
 app.listen(PORT, () => {

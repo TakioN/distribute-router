@@ -18,18 +18,26 @@ async function sendMessage(jobId, masterId, mode) {
     );
     const channel = await connection.createChannel();
 
+    // RabbitMQ 교환기 name
     const exchange = mode === "c" ? "compute" : "save";
+    // RabbitMQ 라우팅 키
     const routingKey =
-      mode === "c" ? `${masterId}.compute.req` : `${masterId}.save.req`;
+      mode === "c"
+        ? `master${masterId}.compute.req`
+        : `master${masterId}.save.req`;
     const msg = JSON.stringify({ job_id: jobId });
 
     // 교환기 생성
     await channel.assertExchange(exchange, "direct", { durable: true });
 
     // 메세지 발행
-    channel.publish(exchange, routingKey, Buffer.from(msg), {
+    console.log("eb : ", exchange);
+    console.log("rb : ", routingKey);
+    const temp = channel.publish(exchange, routingKey, Buffer.from(msg), {
       persistent: true,
     });
+    console.log("e : ", exchange);
+    console.log("r : ", routingKey);
 
     await delay(500);
     await channel.close();

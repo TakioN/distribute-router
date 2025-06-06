@@ -16,10 +16,11 @@ async function getResult(job_id, connection) {
     const [rows] = await connection.query("SELECT result FROM job WHERE id=?", [
       job_id,
     ]);
-    const resultJson = JSON.parse(rows[0]?.result); // {result: 51511}
-    return resultJson.result;
-  } catch {
-    console.error("결과값 가져오기 실패");
+    const result = rows[0]?.result; // {result: 51511}
+    console.log(result.result);
+    return result.result;
+  } catch (e) {
+    console.error("결과값 가져오기 실패" + e);
   }
 }
 
@@ -47,6 +48,7 @@ async function checkResult(req, res) {
       } else if (state[0].state === 1) {
         status = "성공";
         result = await getResult(job_id, connection);
+        console.log(result);
       }
 
       res.json({ state: status, result });

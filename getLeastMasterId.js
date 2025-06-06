@@ -11,6 +11,9 @@ async function getLeastMasterId() {
   const [rows] = await connection.execute(
     "SELECT id FROM master WHERE is_online = 1 and queue = (SELECT MIN(queue) FROM master WHERE is_online = 1)"
   );
+  if (rows.length === 0) {
+    throw new Error("online 상태 master 없음");
+  }
   await connection.end();
   return rows[0].id;
 }

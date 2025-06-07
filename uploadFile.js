@@ -105,10 +105,25 @@ async function uploadFile(req, res) {
       console.warn("로컬 파일 삭제 실패:", e.message);
     }
 
-    let masterId = await getLeastMasterId();
-    if (masterId === null) {
-      throw new Error("No available master found");
+    let masterId;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        masterId = await getLeastMasterId();
+        break;
+      } catch (e) {
+        const isRetryable =
+          e.message.includes("ECONNREFUSED") ||
+          e.message.includes("ETIMEDOUT") ||
+          e.message.includes("Connection lost");
+
+        if (!isRetryable || attempt === maxRetries) throw e;
+
+        // 3초 후 재연결 시도
+        await new Promise((r) => setTimeout(r, 3000));
+        console.error(e);
+      }
     }
+
     const data = { size: Number(fileSize), type: "save", file_url: fileUrl };
     // const data = { type: "save" };
     const jobId = await insertToDb(masterId, data);

@@ -106,27 +106,10 @@ async function uploadFile(req, res) {
     }
 
     let masterId;
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        masterId = await getLeastMasterId();
-        break;
-      } catch (e) {
-        const isRetryable =
-          e.message.includes("ECONNREFUSED") ||
-          e.message.includes("ETIMEDOUT") ||
-          e.message.includes("Connection lost");
-
-        if (!isRetryable || attempt === maxRetries) throw e;
-
-        // 3초 후 재연결 시도
-        await new Promise((r) => setTimeout(r, 3000));
-        console.error(e);
-      }
-    }
+    masterId = await retry(() => getLeastMasterId());
 
     const data = { size: Number(fileSize), type: "save", file_url: fileUrl };
-    // const data = { type: "save" };
-    const jobId = await insertToDb(masterId, data);
+    const jobId = await retry(() => insertToDb(masterId, date));
     await sendMessage(jobId, masterId, "s");
 
     res.json({ success: true, jobId, fileId });
@@ -146,6 +129,28 @@ function checkIfRetryableError(err) {
     return true;
   }
   return false;
+}
+
+async function retry(func) {
+  for (let i = 1; i > 0; i++) {
+    try {
+      return await func();
+    } catch (e) {
+      console.error(e);
+      const isRetryable =
+        e.message.includes("ECONNREFUSED") ||
+        e.message.includes("ETIMEDOUT") ||
+        e.message.includes("Connection lost") ||
+        e.code === "PROTOCOL_CONNECTION_LOST";
+
+      if (!isRetryable) {
+        console.error("조치 필요");
+        throw e;
+      }
+      const delay = i < 4 ? 1000 * Math.pow(2, i) : 10000;
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
 }
 
 module.exports = { uploadFile };

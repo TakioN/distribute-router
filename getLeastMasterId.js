@@ -1,20 +1,4 @@
-const mysql = require("mysql2/promise");
 const pool = require("./db");
-
-function isRetryableDbError(err) {
-  if (!err) return false;
-
-  const retryableMessages = [
-    "ECONNRESET",
-    "ETIMEDOUT",
-    "Connection refused",
-    "PROTOCOL_CONNECTION_LOST",
-    "Too many connections",
-    "Lock wait timeout",
-  ];
-
-  return retryableMessages.some((msg) => err.message.includes(msg));
-}
 
 async function getLeastMasterId() {
   // let connection;

@@ -1,6 +1,6 @@
 const mysql = require("mysql2/promise");
-const pool = require("./db");
-const deleteDriveFile = require("./deleteDriveFile");
+const pool = require("../db");
+const deleteDriveFile = require("../deleteDriveFile");
 
 async function checkStatus(req, res) {
   try {

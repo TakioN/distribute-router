@@ -1,7 +1,7 @@
-const retry = require("./dbRetry");
-const { getLeastMasterId } = require("./getLeastMasterId");
-const { insertToDb } = require("./insertToDb");
-const { sendMessage } = require("./sendMessage");
+const retry = require("../dbRetry");
+const { getLeastMasterId } = require("../getLeastMasterId");
+const { insertToDb } = require("../insertToDb");
+const { sendMessage } = require("../sendMessage");
 
 async function deleteFile(req, res) {
   try {

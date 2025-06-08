@@ -1,7 +1,7 @@
-const { getLeastMasterId } = require("./getLeastMasterId");
-const { insertToDb } = require("./insertToDb");
-const { sendMessage } = require("./sendMessage");
-const retry = require("./dbRetry");
+const { getLeastMasterId } = require("../services/getLeastMasterId");
+const { insertToDb } = require("../services/insertToDb");
+const { sendMessage } = require("../services/sendMessage");
+const retry = require("../utils/dbRetry");
 
 async function computeFile(req, res) {
   try {

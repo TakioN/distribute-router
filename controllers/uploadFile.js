@@ -1,10 +1,10 @@
 require("dotenv").config();
 const fs = require("fs");
 const { google } = require("googleapis");
-const { sendMessage } = require("./sendMessage");
-const { insertToDb } = require("./insertToDb");
-const { getLeastMasterId } = require("./getLeastMasterId");
-const retry = require("./dbRetry");
+const { sendMessage } = require("../services/sendMessage");
+const { insertToDb } = require("../services/insertToDb");
+const { getLeastMasterId } = require("../services/getLeastMasterId");
+const retry = require("../utils/dbRetry");
 
 // 구글 드라이브 auth
 const auth = new google.auth.GoogleAuth({

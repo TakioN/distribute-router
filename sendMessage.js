@@ -66,12 +66,23 @@ async function sendMessage(jobId, masterId, mode) {
     const ch = await getChannel();
 
     // RabbitMQ 교환기 name
-    const exchange = mode === "c" ? "compute" : "save";
+    let exchange = "";
+    if (mode === "s") {
+      exchange = "save";
+    } else if (mode === "c") {
+      exchange = "compute";
+    } else {
+      exchange = "delete";
+    }
     // RabbitMQ 라우팅 키
-    const routingKey =
-      mode === "c"
-        ? `master${masterId}.compute.req`
-        : `master${masterId}.save.req`;
+    let routingKey = "";
+    if (mode === "s") {
+      routingKey = `master${masterId}.save.req`;
+    } else if (mode === "c") {
+      routingKey = `master${masterId}.compute.req`;
+    } else {
+      routingKey = `master${masterId}.delete.req`;
+    }
     const msg = JSON.stringify({ job_id: jobId });
 
     // 교환기 생성

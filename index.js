@@ -6,6 +6,7 @@ const { uploadFile } = require("./uploadFile");
 const { computeFile } = require("./computeFile");
 const { checkStatus } = require("./checkStatus");
 const { checkResult } = require("./checkResult");
+const deleteFile = require("./deleteFile");
 
 const app = express();
 const PORT = 4000;
@@ -27,11 +28,17 @@ app.post("/upload", upload.single("file"), uploadFile);
 // compute
 app.post("/compute", computeFile);
 
+// delete
+app.post("/delete", deleteFile);
+
 // check status(save)
 app.post("/check/upload", checkStatus);
 
 // check status(compute)
 app.post("/check/compute", checkResult);
+
+// check status(delete)
+app.post("/check/delete", checkDelete);
 
 // 서버 시작
 app.listen(PORT, () => {

@@ -4,6 +4,7 @@ const { google } = require("googleapis");
 const { sendMessage } = require("./sendMessage");
 const { insertToDb } = require("./insertToDb");
 const { getLeastMasterId } = require("./getLeastMasterId");
+const retry = require("./dbRetry");
 
 // 구글 드라이브 auth
 const auth = new google.auth.GoogleAuth({
@@ -81,7 +82,7 @@ async function uploadFile(req, res) {
         // 일시적 에러 확인
         const isRetryable = checkIfRetryableError(e);
         if (!isRetryable) {
-          console.error("조치 필요");
+          console.error(`조치 필요`);
           throw e;
         }
 
@@ -109,7 +110,7 @@ async function uploadFile(req, res) {
     masterId = await retry(() => getLeastMasterId());
 
     const data = { size: Number(fileSize), type: "save", file_url: fileUrl };
-    const jobId = await retry(() => insertToDb(masterId, date));
+    const jobId = await retry(() => insertToDb(masterId, data));
     await sendMessage(jobId, masterId, "s");
 
     res.json({ success: true, jobId, fileId });
@@ -131,26 +132,4 @@ function checkIfRetryableError(err) {
   return false;
 }
 
-async function retry(func) {
-  for (let i = 1; i > 0; i++) {
-    try {
-      return await func();
-    } catch (e) {
-      console.error(e);
-      const isRetryable =
-        e.message.includes("ECONNREFUSED") ||
-        e.message.includes("ETIMEDOUT") ||
-        e.message.includes("Connection lost") ||
-        e.code === "PROTOCOL_CONNECTION_LOST";
-
-      if (!isRetryable) {
-        console.error("조치 필요");
-        throw e;
-      }
-      const delay = i < 4 ? 1000 * Math.pow(2, i) : 10000;
-      await new Promise((r) => setTimeout(r, delay));
-    }
-  }
-}
-
-module.exports = { uploadFile };
+module.exports = { uploadFile, drive };

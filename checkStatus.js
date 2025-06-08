@@ -1,18 +1,14 @@
 const mysql = require("mysql2/promise");
+const pool = require("./db");
+const deleteDriveFile = require("./deleteDriveFile");
 
 async function checkStatus(req, res) {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PW,
-    database: process.env.DB_NAME,
-  });
   try {
     const { job_id } = req.body;
     let status = "";
     let model_id = null;
     try {
-      const [rows] = await connection.query(
+      const [rows] = await pool.query(
         "SELECT state, data FROM job WHERE id=?",
         [job_id]
       );
@@ -24,6 +20,9 @@ async function checkStatus(req, res) {
       } else if (rows[0]?.state === 1) {
         status = "성공";
         model_id = rows[0]?.data.model_id;
+        const fileId = rows[0]?.data.file_url.split("=")[1];
+        console.log(fileId);
+        await deleteDriveFile(fileId);
       } else {
         status = "해당 값 비어있음";
       }

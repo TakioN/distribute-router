@@ -1,4 +1,4 @@
-const { drive } = require("./controllers/uploadFile");
+const { drive } = require("../controllers/uploadFile");
 
 async function deleteDriveFile(fileId) {
   try {

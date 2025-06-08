@@ -5,7 +5,7 @@ const { sendMessage } = require("../sendMessage");
 
 async function deleteFile(req, res) {
   try {
-    const fileId = req.file_id;
+    const { fileId } = req.body;
     const masterId = await retry(() => getLeastMasterId());
     const data = { type: "delete", model_id: fileId };
 

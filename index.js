@@ -2,11 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
-const { uploadFile } = require("./uploadFile");
-const { computeFile } = require("./computeFile");
-const { checkStatus } = require("./checkStatus");
-const { checkResult } = require("./checkResult");
-const deleteFile = require("./deleteFile");
+const { uploadFile } = require("./controller/uploadFile");
+const { computeFile } = require("./controller/computeFile");
+const { checkStatus } = require("./controller/checkStatus");
+const { checkResult } = require("./controller/checkResult");
+const deleteFile = require("./controller/deleteFile");
 
 const app = express();
 const PORT = 4000;

@@ -12,7 +12,6 @@ async function checkStatus(req, res) {
         "SELECT state, data FROM job WHERE id=?",
         [job_id]
       );
-      console.log(rows[0]?.data);
       if (rows[0]?.state === -1) {
         status = "진행 중";
       } else if (rows[0]?.state === 0) {

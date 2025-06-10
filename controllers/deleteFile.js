@@ -1,13 +1,13 @@
-const retry = require("../dbRetry");
-const { getLeastMasterId } = require("../getLeastMasterId");
-const { insertToDb } = require("../insertToDb");
-const { sendMessage } = require("../sendMessage");
+const retry = require("../utils/dbRetry");
+const { getLeastMasterId } = require("../services/getLeastMasterId");
+const { insertToDb } = require("../services/insertToDb");
+const { sendMessage } = require("../services/sendMessage");
 
 async function deleteFile(req, res) {
   try {
-    const { fileId } = req.body;
+    const { file_id } = req.body;
     const masterId = await retry(() => getLeastMasterId());
-    const data = { type: "delete", model_id: fileId };
+    const data = { type: "delete", model_id: Number(file_id) };
 
     const jobId = await retry(() => insertToDb(masterId, data));
     await sendMessage(jobId, masterId, "d");

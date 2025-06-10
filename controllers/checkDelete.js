@@ -1,3 +1,5 @@
+const pool = require("../db/db");
+
 async function checkDelete(req, res) {
   try {
     const { job_id } = req.body;
